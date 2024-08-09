@@ -5,7 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-gauge@0.3.0/dist/chartjs-gauge.min.js"></script>
+
     <title>Rapport</title>
+
+
     <style>
         /* Styles CSS pour les éléments de la page */
         table {
@@ -211,9 +218,32 @@
             {{ $resume }}
         </p>
     </div>
+    
+    <div style="width: 100%; text-align: center; font-family: Arial, sans-serif;">
+        <div style="background-color: #0f2952; color: white; padding: 10px; font-size: 18px; font-weight: bold;">
+            Moyenne générale de la visite {{ number_format(intval($scoresGlobale->total_score_conforme_globale) / intval($scoresGlobale->total_score_globale), 2) * 100 }}%
+        </div>
+        <div style="border: 1px solid #ccc; padding: 20px;">
+            <div style="position: relative; width: 300px; height: 150px; margin: 0 auto;">
+                <div style="position: absolute; width: 300px; height: 150px; border-radius: 150px 150px 0 0; background: conic-gradient(from -180deg, #ff0000 0deg 80deg, #ff8000 80deg 120deg, #ffff00 120deg 180deg, #35be35 180deg 180deg); overflow: hidden;"></div>
+                <div id="needle" style="position: absolute; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 130px solid black; left: 142px; bottom: 0; transform-origin: bottom center; transform: rotate(0deg); transition: transform 1s;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const score = {{ number_format(intval($scoresGlobale->total_score_conforme_globale) / intval($scoresGlobale->total_score_globale), 2) * 100 }};
+        const needle = document.getElementById('needle');
+        // Calculate rotation angle
+        const rotation = (score / 100) * 180 - 90; // -90 to start from the left side
+        needle.style.transform = `rotate(${rotation}deg)`;
+    });
+    </script>
+    
 
-   
 
+</script>
 
     <div class="caption">Rappel visites précédentes</div>
 
