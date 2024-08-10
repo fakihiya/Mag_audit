@@ -47,13 +47,15 @@ class RapportController extends Controller
             return redirect()->back()->with('error', 'Auditor not found');
         }
 
-        $scores = HotelScoresByNorm::with('item')->select('id_item')
-            ->selectRaw('SUM(CASE WHEN score > 1.00 THEN score ELSE 0 END) as total_score')
-            ->selectRaw('SUM(CASE WHEN score > 1.00 AND verifie = "conforme" THEN score ELSE 0 END) as total_score_conforme')
-            ->where('hotel_id', $hotel_id)
-            ->where('mission', $ID_Mission)
-            ->groupBy('id_item')
-            ->get();
+        $scores = HotelScoresByNorm::with(['item.category']) 
+        ->select('id_item')
+        ->selectRaw('SUM(CASE WHEN score > 1.00 THEN score ELSE 0 END) as total_score')
+        ->selectRaw('SUM(CASE WHEN score > 1.00 AND verifie = "conforme" THEN score ELSE 0 END) as total_score_conforme')
+        ->where('hotel_id', $hotel_id)
+        ->where('mission', $ID_Mission)
+        ->groupBy('id_item')
+        ->get();
+
 
         $scoresGlobale = HotelScoresByNorm::selectRaw('SUM(CASE WHEN score > 1.00 THEN score ELSE 0 END) as total_score_globale')
             ->selectRaw('SUM(CASE WHEN score > 1.00 AND verifie = "conforme" THEN score ELSE 0 END) as total_score_conforme_globale')
@@ -130,5 +132,5 @@ public function generatePdf($hotel_id, $legende_id, $ID_Mission)
     $pdf = PDF::loadView('pdf_view', $data);
     return $pdf->download('rapport.pdf');
 }
-    
+
 }
