@@ -41,7 +41,8 @@
             text-align: center;
         }
 
-        td {
+        td,th {
+
             padding: 5px;
             height: 3rem !important;
             border: 1px solid #ddd;
@@ -87,7 +88,7 @@
         }
 
         .progress-container {
-            width: 30% !important;
+
             height: 100% !important;
             display: flex;
             justify-content: center;
@@ -347,7 +348,7 @@
                 <th>Note section</th>
                 <th>Note pondérée</th>
                 <th>Progression</th>
-                <th>Note par section</th>
+                {{--  <th>Note par section</th>  --}}
             </tr>
         </thead>
         <tbody>
@@ -378,7 +379,7 @@
                         <span class="progress-percentage">{{ number_format($category_percentage, 2) }}%</span>
                     </td>
 
-                 <td></td>
+{{--  <td></td>  --}}
                 </tr>
 
                 <!-- Display the items under the current category -->
@@ -404,7 +405,7 @@
                                 </div>
                             </div>  --}}
                         </td>
-                        <td></td>
+                        {{--  <td></td>  --}}
                     </tr>
                 @endforeach
             @endforeach
@@ -421,7 +422,6 @@
                         0%
                     @endif
                 </td>
-                <td></td>
                 <td></td>
             </tr>
         </tbody>
