@@ -248,9 +248,8 @@
             datasets: [{
                 data: [globalScore, 100 - globalScore],
                 backgroundColor: [
-                    globalScore >= 75 ? 'green' :
-                    globalScore >= 50 ? 'yellow' :
-                    globalScore >= 25 ? 'orange' : 'red',
+                    globalScore >= 66 ? 'green' :
+                    globalScore >= 33 ? 'orange' : 'red',
                     'lightgray'
                 ],
                 circumference: 180,
@@ -305,12 +304,12 @@
         @foreach ($visites as $index => $visite)
             @php
                 $score = intval($visite->score);
-                $color = 'blue';
-                if ($score < 30) {
+                $color = 'green';
+                if ($score < 33) {
                     $color = 'red';
-                } elseif ($score < 50) {
-                    $color = 'yellow';
-                } elseif ($score < 80) {
+                } elseif ($score < 66) {
+                    $color = 'orange';
+                } else{
                     $color = 'green';
                 }
             @endphp
@@ -365,16 +364,15 @@
                 <!-- Display the category name and its ponderation -->
                 <tr>
                     <td><strong>{{ $category->libele }}</strong></td>
-                    <td>{{ $category_ponderation }}%</td>
+                    <td>{{ $category_ponderation }}</td>
                     <td></td>
                     <td>{{ $formatted_category_weighted_score }}</td>
                     <td style="display: flex; align-items: center; gap: 10px;">
                         <div class="progress-container" style="flex: 1; display: flex; align-items: center;">
                             <div class="progress-bar" style="width: 100%; background-color: #f3f3f3; border-radius: 5px;">
                                 <div class="colored-bar" style="width: {{ number_format($category_percentage, 2) }}%; background-color:
-                                    {{ $category_percentage >= 75 ? 'green' :
-                                        ($category_percentage >= 50 ? 'yellow' :
-                                        ($category_percentage >= 25 ? 'orange' : 'red')) }}; border-radius: 5px; height: 100%;"></div>
+                                    {{ $category_percentage >= 66 ? 'green' :
+                                        ($category_percentage >= 33 ? 'orange' : 'red') }}; border-radius: 5px; height: 100%;"></div>
                             </div>
                         </div>
                         <span class="progress-percentage">{{ number_format($category_percentage, 2) }}%</span>
@@ -484,9 +482,8 @@
                         const itemWeightedScore = ((itemPercentage * categoryPonderation) / 100).toFixed(2);
                         const coloredBar = document.getElementById('coloredBar_{{ $loop->parent->index }}_{{ $loop->index }}');
                         coloredBar.style.width = itemPercentage + '%';
-                        coloredBar.style.backgroundColor = itemPercentage >= 75 ? 'green' :
-                                                           itemPercentage >= 50 ? 'yellow' :
-                                                           itemPercentage >= 25 ? 'orange' : 'red';
+                        coloredBar.style.backgroundColor = itemPercentage >= 66 ? 'green' :
+                                                           itemPercentage >= 33 ? 'orange' : 'red';
                         // Update the weighted score display
                         const weightedScoreElement = document.getElementById('itemWeightedScore_{{ $loop->parent->index }}_{{ $loop->index }}');
                         if (weightedScoreElement) {
