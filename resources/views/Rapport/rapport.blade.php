@@ -87,7 +87,7 @@
         }
 
         .progress-container {
-            width: 80%;
+            width: 30% !important;
             height: 100% !important;
             display: flex;
             justify-content: center;
@@ -219,8 +219,8 @@
         </p>
     </div>
 
-   
-    
+
+
 
     <div style="width: 100%; text-align: center; font-family: Arial, sans-serif;">
         <div style="background-color: #031c96; color: white; padding: 10px; font-size: 18px; font-weight: bold;">
@@ -230,16 +230,16 @@
             <div style="width: 300px; height: 200px; margin: auto;">
                 <canvas id="gaugeChart"></canvas>
             </div>
-            
+
         </div>
     </div>
 
     <script>
-        
-       
+
+
   document.addEventListener('DOMContentLoaded', function() {
     const ctx = document.getElementById('gaugeChart').getContext('2d');
-    
+
     const globalScore = {{ number_format(intval($scoresGlobale->total_score_conforme_globale) / intval($scoresGlobale->total_score_globale), 2) * 100 }};
 
     new Chart(ctx, {
@@ -343,90 +343,89 @@
         <caption>Détails des Normes</caption>
         <thead>
             <tr>
-
                 <th>Section</th>
                 <th>Pondération</th>
                 <th>Note section</th>
                 <th>Note pondérée</th>
-                <th>Moyenne section pondérée</th>
+                <th>Progression</th>
                 <th>Note par section</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($scores as $score)
+            @foreach ($scores->groupBy('item.category.id') as $category_id => $category_scores)
+                @php
+                    $category = $category_scores->first()->item->category;
+                    $category_ponderation = $category->ponderation;
+                    $category_total_score_conforme = $category_scores->sum('total_score_conforme');
+                    $category_total_score = $category_scores->sum('total_score');
+                    $category_percentage = $category_total_score != 0 ? ($category_total_score_conforme / $category_total_score) * 100 : 0;
+                    $category_weighted_score = ($category_percentage * $category_ponderation) / 100;
+                    $formatted_category_weighted_score = number_format($category_weighted_score, 2);
+                @endphp
+                <!-- Display the category name and its ponderation -->
                 <tr>
-                    <td>{{ $score->item->libelle }}</td>
-                    <td>_</td>
-                    <td>{{ intval($score->total_score_conforme) }} / {{ intval($score->total_score) }}</td>
-                    <td>
-                        @if ($score->total_score != 0)
-                            <span id="percentage_{{ $loop->iteration }}">
-                                {{ number_format(intval($score->total_score_conforme) / intval($score->total_score), 2) * 100 }}%
-                            </span>
-                        @else
-                            0%
-                        @endif
-                    </td>
-                    <td>
-                        <div class="progress-container"
-                            style="height: 100% !important display : flex !important; flex-wrap: nowrap">
-                            <div class="progress-bar" style="width: 70%; ">
-                                <div id="coloredBar_{{ $loop->iteration }}" class="colored-bar" style="width: 0%;">
-                                </div>
-                                {{-- @if ($score->total_score != 0)
-                        <span id="percentage_{{$loop->iteration}}">
-                            {{ number_format(intval($score->total_score_conforme) / intval($score->total_score), 2) * 100}}%
-                        </span>
-                    @else
-                        0%
-                    @endif --}}
+                    <td><strong>{{ $category->libele }}</strong></td>
+                    <td>{{ $category_ponderation }}%</td>
+                    <td></td>
+                    <td>{{ $formatted_category_weighted_score }}</td>
+                    <td style="display: flex; align-items: center; gap: 10px;">
+                        <div class="progress-container" style="flex: 1; display: flex; align-items: center;">
+                            <div class="progress-bar" style="width: 100%; background-color: #f3f3f3; border-radius: 5px;">
+                                <div class="colored-bar" style="width: {{ number_format($category_percentage, 2) }}%; background-color:
+                                    {{ $category_percentage >= 75 ? 'green' :
+                                        ($category_percentage >= 50 ? 'yellow' :
+                                        ($category_percentage >= 25 ? 'orange' : 'red')) }}; border-radius: 5px; height: 100%;"></div>
                             </div>
                         </div>
+                        <span class="progress-percentage">{{ number_format($category_percentage, 2) }}%</span>
                     </td>
-                    <td>
-                        @if ($score->total_score != 0)
-                            <span id="percentage_{{ $loop->iteration }}">
-                                {{ number_format(intval($score->total_score_conforme) / intval($score->total_score), 2) * 100 }}%
-                            </span>
-                        @else
-                            0%
-                        @endif
-                        {{-- <div class="progress-bar" style="width: 100%;">
-                        <div id="coloredBar_{{$loop->iteration}}_bg" class="colored-bar" style="width: 0%;"></div>
-                    </div> --}}
-                    </td>
+
+                 <td></td>
                 </tr>
+
+                <!-- Display the items under the current category -->
+                @foreach ($category_scores as $score)
+                    @php
+                        $item_percentage = $score->total_score != 0 ? ($score->total_score_conforme / $score->total_score) * 100 : 0;
+                        $item_weighted_score = ($item_percentage * $category_ponderation) / 100;
+                        $formatted_item_weighted_score = number_format($item_weighted_score, 2);
+                    @endphp
+                    <tr>
+                        <td>{{ $score->item->libelle }}</td>
+                        <td></td>
+                        <td>{{ intval($score->total_score_conforme) }} / {{ intval($score->total_score) }}</td>
+                        <td>{{ $formatted_item_weighted_score }}</td>
+                        <td>
+                            {{--  <div class="progress-container">
+                                <div class="progress-bar" style="width: 100%;">
+                                    <div class="colored-bar" style="width: {{ $item_percentage }}%; background-color:
+                                    {{ $item_percentage >= 75 ? 'green' :
+                                        ($item_percentage >= 50 ? 'yellow' :
+                                        ($item_percentage >= 25 ? 'orange' : 'red')) }};">
+                                    </div>
+                                </div>
+                            </div>  --}}
+                        </td>
+                        <td></td>
+                    </tr>
+                @endforeach
             @endforeach
+
+            <!-- Display the global score -->
             <tr>
                 <td id="score-globale">Score Globale</td>
                 <td id="score-globale">_</td>
-                <td id="score-globale">{{ intval($scoresGlobale->total_score_conforme_globale) }} /
-                    {{ intval($scoresGlobale->total_score_globale) }}</td>
+                <td id="score-globale">{{ intval($scoresGlobale->total_score_conforme_globale) }} / {{ intval($scoresGlobale->total_score_globale) }}</td>
                 <td id="score-globale">
                     @if ($scoresGlobale->total_score_globale != 0)
-                        <span>
-                            {{ number_format(intval($scoresGlobale->total_score_conforme_globale) / intval($scoresGlobale->total_score_globale), 2) * 100 }}%
-                        </span>
+                        <span>{{ number_format(($scoresGlobale->total_score_conforme_globale / $scoresGlobale->total_score_globale) * 100, 2) }}%</span>
                     @else
                         0%
                     @endif
                 </td>
-
-                {{-- <div class="progress-container" style="height: 100% !important display : flex !important; flex-wrap: nowrap">
-            <div class="progress-bar" style="width: 70%; ">
-                <div id="coloredBar_{{$loop->iteration}}" class="colored-bar" style="width: 0%;"></div>
-
-            </div>
-        </div>
-    </td>
-        <td>
-            <div class="progress-bar" style="width: 100%;">
-                <div id="coloredBar_{{$loop->iteration}}_bg" class="colored-bar" style="width: 0%;"></div>
-            </div>
-        </td> --}}
+                <td></td>
+                <td></td>
             </tr>
-
-
         </tbody>
     </table>
 
@@ -443,6 +442,11 @@
             </tr>
         </thead>
         <tbody>
+
+
+
+
+
             @foreach ($normes as $norme)
                 <tr>
                     <td style="width: 50% !important">{{ $norme->norm->Normes }}</td>
@@ -470,38 +474,30 @@
     {{-- <button id="printButton"
         style="position: fixed; bottom: 1.5rem; right: 6rem; width: 3.5rem; height: 3.5rem; background-color: #444cb3; color: white; font-size: 1.5rem; border: solid 2px rgb(149, 148, 148); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">🖨️</button> --}}
 
-    <script>
-        function getColor(percentage) {
-            if (percentage >= 75) {
-                return 'green';
-            } else if (percentage >= 50) {
-                return 'yellow';
-            } else if (percentage >= 25) {
-                return 'orange';
-            } else {
-                return 'red';
-            }
-        }
-
-        document.getElementById("printButton").addEventListener("click", function() {
-            window.print();
-        });
-    </script>
-
-    @foreach ($scores as $score)
         <script>
-            var percentage{{ $loop->iteration }} =
-                {{ $score->total_score != 0 ? number_format(intval($score->total_score_conforme) / intval($score->total_score), 2) * 100 : 0 }};
-            var coloredBar{{ $loop->iteration }} = document.getElementById('coloredBar_{{ $loop->iteration }}');
-            coloredBar{{ $loop->iteration }}.style.width = percentage{{ $loop->iteration }} + '%';
-            coloredBar{{ $loop->iteration }}.style.backgroundColor = getColor(percentage{{ $loop->iteration }});
-
-            var coloredBarBg{{ $loop->iteration }} = document.getElementById('coloredBar_{{ $loop->iteration }}_bg');
-            coloredBarBg{{ $loop->iteration }}.style.width = percentage{{ $loop->iteration }} + '%';
-            coloredBarBg{{ $loop->iteration }}.style.backgroundColor = getColor(percentage{{ $loop->iteration }});
+            document.addEventListener('DOMContentLoaded', function() {
+                // Iterate over each category and item to update the colored bars
+                @foreach ($scores->groupBy('item.category.id') as $category_id => $category_scores)
+                    @foreach ($category_scores as $score)
+                        const categoryPonderation = {{ $score->item->category->ponderation }};
+                        const itemPercentage = {{ $score->total_score != 0 ? number_format($score->total_score_conforme / $score->total_score, 2) * 100 : 0 }};
+                        const itemWeightedScore = ((itemPercentage * categoryPonderation) / 100).toFixed(2);
+                        const coloredBar = document.getElementById('coloredBar_{{ $loop->parent->index }}_{{ $loop->index }}');
+                        coloredBar.style.width = itemPercentage + '%';
+                        coloredBar.style.backgroundColor = itemPercentage >= 75 ? 'green' :
+                                                           itemPercentage >= 50 ? 'yellow' :
+                                                           itemPercentage >= 25 ? 'orange' : 'red';
+                        // Update the weighted score display
+                        const weightedScoreElement = document.getElementById('itemWeightedScore_{{ $loop->parent->index }}_{{ $loop->index }}');
+                        if (weightedScoreElement) {
+                            weightedScoreElement.textContent = itemWeightedScore;
+                        }
+                    @endforeach
+                @endforeach
+            });
         </script>
-    @endforeach 
-    <script>
+
+
 
 
 
