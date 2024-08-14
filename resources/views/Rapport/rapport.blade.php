@@ -249,8 +249,8 @@
             datasets: [{
                 data: [globalScore, 100 - globalScore],
                 backgroundColor: [
-                    globalScore >= 66 ? 'green' :
-                    globalScore >= 33 ? 'orange' : 'red',
+                    globalScore >= 70 ? 'green' :
+                    globalScore >= 50 ? 'orange' : 'red',
                     'lightgray'
                 ],
                 circumference: 180,
@@ -306,9 +306,9 @@
             @php
                 $score = intval($visite->score);
                 $color = 'green';
-                if ($score < 33) {
+                if ($score < 50) {
                     $color = 'red';
-                } elseif ($score < 66) {
+                } elseif ($score < 70) {
                     $color = 'orange';
                 } else{
                     $color = 'green';
@@ -348,7 +348,7 @@
                 <th>Note section</th>
                 <th>Note pondérée</th>
                 <th>Progression</th>
-                {{--  <th>Note par section</th>  --}}
+                <th>Note par section</th>
             </tr>
         </thead>
         <tbody>
@@ -367,19 +367,20 @@
                     <td><strong>{{ $category->libele }}</strong></td>
                     <td>{{ $category_ponderation }}</td>
                     <td></td>
-                    <td>{{ $formatted_category_weighted_score }}</td>
+                    <td class="Note_pondérée">{{ $formatted_category_weighted_score }}</td>
                     <td style="display: flex; align-items: center; gap: 10px;">
                         <div class="progress-container" style="flex: 1; display: flex; align-items: center;">
                             <div class="progress-bar" style="width: 100%; background-color: #f3f3f3; border-radius: 5px;">
                                 <div class="colored-bar" style="width: {{ number_format($category_percentage, 2) }}%; background-color:
-                                    {{ $category_percentage >= 66 ? 'green' :
-                                        ($category_percentage >= 33 ? 'orange' : 'red') }}; border-radius: 5px; height: 100%;"></div>
+                                    {{ $category_percentage >= 70 ? 'green' :
+                                        ($category_percentage >= 50 ? 'orange' : 'red') }}; border-radius: 5px; height: 100%;"></div>
                             </div>
                         </div>
                         <span class="progress-percentage">{{ number_format($category_percentage, 2) }}%</span>
                     </td>
 
-{{--  <td></td>  --}}
+                    <td>{{ number_format(($category_scores->sum('total_conforme') / ($category_scores->sum('total_conforme') + $category_scores->sum('total_non_conforme'))) * 100, 2) }}%</td>
+
                 </tr>
 
                 <!-- Display the items under the current category -->
@@ -405,7 +406,7 @@
                                 </div>
                             </div>  --}}
                         </td>
-                        {{--  <td></td>  --}}
+                        <td></td>
                     </tr>
                 @endforeach
             @endforeach
@@ -415,18 +416,18 @@
                 <td id="score-globale">Score Globale</td>
                 <td id="score-globale">_</td>
                 <td id="score-globale">{{ intval($scoresGlobale->total_score_conforme_globale) }} / {{ intval($scoresGlobale->total_score_globale) }}</td>
-                <td id="score-globale">
-                    @if ($scoresGlobale->total_score_globale != 0)
+                <td id="score-globale" class="totale_note_pondere">
+                    {{--  @if ($scoresGlobale->total_score_globale != 0)
                         <span>{{ number_format(($scoresGlobale->total_score_conforme_globale / $scoresGlobale->total_score_globale) * 100, 2) }}%</span>
                     @else
                         0%
-                    @endif
+                    @endif  --}}
                 </td>
-                <td></td>
+                {{--  <td></td>  --}}
             </tr>
         </tbody>
     </table>
-
+<i class="fa fa-server" aria-hidden="true"></i>
 
 
     <table id="details-table">
@@ -482,8 +483,8 @@
                         const itemWeightedScore = ((itemPercentage * categoryPonderation) / 100).toFixed(2);
                         const coloredBar = document.getElementById('coloredBar_{{ $loop->parent->index }}_{{ $loop->index }}');
                         coloredBar.style.width = itemPercentage + '%';
-                        coloredBar.style.backgroundColor = itemPercentage >= 66 ? 'green' :
-                                                           itemPercentage >= 33 ? 'orange' : 'red';
+                        coloredBar.style.backgroundColor = itemPercentage >= 70 ? 'green' :
+                                                           itemPercentage >= 50 ? 'orange' : 'red';
                         // Update the weighted score display
                         const weightedScoreElement = document.getElementById('itemWeightedScore_{{ $loop->parent->index }}_{{ $loop->index }}');
                         if (weightedScoreElement) {
@@ -495,6 +496,27 @@
         </script>
 
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Get all elements with the class 'Note_pondérée'
+                let notePondereeElements = document.querySelectorAll('.Note_pondérée');
+                let totalNotePonderee = 0;
+
+                // Iterate over each element and add its value to the total
+                notePondereeElements.forEach(function(element) {
+                    let value = parseFloat(element.innerText);
+                    if (!isNaN(value)) {
+                        totalNotePonderee += value;
+                    }
+                });
+
+                // Format the total to two decimal places
+                totalNotePonderee = totalNotePonderee.toFixed(2);
+
+                // Set the total value in the element with class 'totale_note_pondere'
+                document.querySelector('.totale_note_pondere').innerText = totalNotePonderee;
+            });
+        </script>
 
 
 
