@@ -47,14 +47,26 @@ class RapportController extends Controller
             return redirect()->back()->with('error', 'Auditor not found');
         }
 
-        $scores = HotelScoresByNorm::with(['item.category']) 
-        ->select('id_item')
-        ->selectRaw('SUM(CASE WHEN score > 1.00 THEN score ELSE 0 END) as total_score')
-        ->selectRaw('SUM(CASE WHEN score > 1.00 AND verifie = "conforme" THEN score ELSE 0 END) as total_score_conforme')
-        ->where('hotel_id', $hotel_id)
-        ->where('mission', $ID_Mission)
-        ->groupBy('id_item')
-        ->get();
+        // $scores = HotelScoresByNorm::with(['item.category'])
+        // ->select('id_item')
+        // ->selectRaw('SUM(CASE WHEN score > 1.00 THEN score ELSE 0 END) as total_score')
+        // ->selectRaw('SUM(CASE WHEN score > 1.00 AND verifie = "conforme" THEN score ELSE 0 END) as total_score_conforme')
+        // ->where('hotel_id', $hotel_id)
+        // ->where('mission', $ID_Mission)
+        // ->groupBy('id_item')
+        // ->get();
+
+        $scores = HotelScoresByNorm::with(['item.category'])
+    ->select('id_item')
+    ->selectRaw('SUM(CASE WHEN score > 1.00 THEN score ELSE 0 END) as total_score')
+    ->selectRaw('SUM(CASE WHEN score > 1.00 AND verifie = "conforme" THEN score ELSE 0 END) as total_score_conforme')
+    ->selectRaw('SUM(CASE WHEN verifie = "conforme" THEN 1 ELSE 0 END) as total_conforme')
+    ->selectRaw('SUM(CASE WHEN verifie = "non_conforme" THEN 1 ELSE 0 END) as total_non_conforme')
+    ->where('hotel_id', $hotel_id)
+    ->where('mission', $ID_Mission)
+    ->groupBy('id_item')
+    ->get();
+
 
 
         $scoresGlobale = HotelScoresByNorm::selectRaw('SUM(CASE WHEN score > 1.00 THEN score ELSE 0 END) as total_score_globale')
