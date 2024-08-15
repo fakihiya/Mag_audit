@@ -358,11 +358,12 @@
                     $category_ponderation = $category->ponderation;
                     $category_total_score_conforme = $category_scores->sum('total_score_conforme');
                     $category_total_score = $category_scores->sum('total_score');
-                    $category_percentage = $category_total_score != 0 ? ($category_total_score_conforme / $category_total_score) * 100 : 0;
+
+                    // Avoid division by zero
+                    $category_percentage = $category_total_score > 0 ? ($category_total_score_conforme / $category_total_score) * 100 : 0;
                     $category_weighted_score = ($category_percentage * $category_ponderation) / 100;
                     $formatted_category_weighted_score = number_format($category_weighted_score, 2);
                 @endphp
-                <!-- Display the category name and its ponderation -->
                 <tr>
                     <td><strong>{{ $category->libele }}</strong></td>
                     <td>{{ $category_ponderation }}</td>
@@ -379,14 +380,19 @@
                         <span class="progress-percentage">{{ number_format($category_percentage, 2) }}%</span>
                     </td>
 
-                    <td>{{ number_format(($category_scores->sum('total_conforme') / ($category_scores->sum('total_conforme') + $category_scores->sum('total_non_conforme'))) * 100, 2) }}%</td>
-
+                    <td>
+                        @php
+                            $total_conforme = $category_scores->sum('total_conforme');
+                            $total_non_conforme = $category_scores->sum('total_non_conforme');
+                            $total = $total_conforme + $total_non_conforme;
+                        @endphp
+                        {{ $total > 0 ? number_format(($total_conforme / $total) * 100, 2) : 0 }}%
+                    </td>
                 </tr>
 
-                <!-- Display the items under the current category -->
                 @foreach ($category_scores as $score)
                     @php
-                        $item_percentage = $score->total_score != 0 ? ($score->total_score_conforme / $score->total_score) * 100 : 0;
+                        $item_percentage = $score->total_score > 0 ? ($score->total_score_conforme / $score->total_score) * 100 : 0;
                         $item_weighted_score = ($item_percentage * $category_ponderation) / 100;
                         $formatted_item_weighted_score = number_format($item_weighted_score, 2);
                     @endphp
@@ -395,37 +401,26 @@
                         <td></td>
                         <td>{{ intval($score->total_score_conforme) }} / {{ intval($score->total_score) }}</td>
                         <td>{{ $formatted_item_weighted_score }}</td>
-                        <td>
-                            {{--  <div class="progress-container">
-                                <div class="progress-bar" style="width: 100%;">
-                                    <div class="colored-bar" style="width: {{ $item_percentage }}%; background-color:
-                                    {{ $item_percentage >= 75 ? 'green' :
-                                        ($item_percentage >= 50 ? 'yellow' :
-                                        ($item_percentage >= 25 ? 'orange' : 'red')) }};">
-                                    </div>
-                                </div>
-                            </div>  --}}
-                        </td>
+                        <td></td>
                         <td></td>
                     </tr>
                 @endforeach
             @endforeach
 
-            <!-- Display the global score -->
             <tr>
                 <td id="score-globale">Score Globale</td>
                 <td id="score-globale">_</td>
                 <td id="score-globale">{{ intval($scoresGlobale->total_score_conforme_globale) }} / {{ intval($scoresGlobale->total_score_globale) }}</td>
                 <td id="score-globale" class="totale_note_pondere">
-                    {{--  @if ($scoresGlobale->total_score_globale != 0)
-                        <span>{{ number_format(($scoresGlobale->total_score_conforme_globale / $scoresGlobale->total_score_globale) * 100, 2) }}%</span>
-                    @else
-                        0%
-                    @endif  --}}
+                    @php
+                        $total_score_globale = $scoresGlobale->total_score_globale;
+                        $total_score_conforme_globale = $scoresGlobale->total_score_conforme_globale;
+                    @endphp
+                    {{ $total_score_globale > 0 ? number_format(($total_score_conforme_globale / $total_score_globale) * 100, 2) : 0 }}%
                 </td>
-                {{--  <td></td>  --}}
             </tr>
         </tbody>
+
     </table>
 <i class="fa fa-server" aria-hidden="true"></i>
 
