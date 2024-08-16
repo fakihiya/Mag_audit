@@ -424,47 +424,55 @@
     </table>
 <i class="fa fa-server" aria-hidden="true"></i>
 
-
+@foreach ($normes->groupBy('item.category.libele') as $category => $groupedNormes)
     <table id="details-table">
-        <caption>Détails des Normes</caption>
+        {{--  <caption>Détails des Normes - {{ $category }}</caption>  --}}
         <thead>
-            <tr>
-                <th>Norme ID</th>
-                <th>Réponse</th>
-                <th>Score</th>
-                <th>Commentaire</th>
+            <tr style="background-color: #1e39c2">
+                <th style="background-color: #1e39c2; color:#ccc" >{{ $category }}</th>
+                <th  style="background-color: #1e39c2; color:#ccc" >Réponse</th>
+                <th  style="background-color: #1e39c2; color:#ccc" >Score</th>
+                <th  style="background-color: #1e39c2; color:#ccc" >Commentaire</th>
             </tr>
         </thead>
         <tbody>
-
-
-
-
-
-            @foreach ($normes as $norme)
+            @foreach ($groupedNormes->groupBy('item.libelle') as $item => $itemNormes)
                 <tr>
-                    <td style="width: 50% !important">{{ $norme->norm->Normes }}</td>
-                    @if ($norme->verifie == 'conforme')
-                        <td>*Oui</td>
-                    @elseif($norme->verifie == 'non_conforme' || $norme->verifie == 'Non inspecté')
-                        <td>*Non</td>
-                    @else
-                        <td></td>
-                    @endif
-
-                    @if ($norme->verifie == 'conforme')
-                        <td>{{ $norme->score }}/{{ $norme->score }}</td>
-                    @elseif($norme->verifie == 'non_conforme' || $norme->verifie == 'Non inspecté')
-                        <td>0.00/{{ $norme->score }}</td>
-                    @else
-                        <td></td>
-                    @endif
-
-                    <td>{{ $norme->remarques }}</td>
+                    <td colspan="4" style="font-weight: bold; background-color: #5480b1; color:#000000">
+                        {{ $item }}
+                    </td>
                 </tr>
+                @foreach ($itemNormes as $norme)
+                    <tr>
+                        <td>{{ $norme->norm->Normes }}</td>
+                        <td>
+                            @if ($norme->verifie == 'conforme')
+                                *Oui
+                            @elseif($norme->verifie == 'non_conforme')
+                                *Non
+                            @else
+                                *N/A
+                            @endif
+                        </td>
+                        <td>
+                            @if ($norme->verifie == 'conforme')
+                                {{ $norme->score }}/{{ $norme->score }}
+                            @elseif($norme->verifie == 'non_conforme')
+                                0.00/{{ $norme->score }}
+                            @else
+                                &nbsp;
+                            @endif
+                        </td>
+                        <td style="color:#0653fa">{{ $norme->remarques }}</td>
+                    </tr>
+                @endforeach
             @endforeach
         </tbody>
     </table>
+@endforeach
+
+
+
     {{-- <button id="printButton"
         style="position: fixed; bottom: 1.5rem; right: 6rem; width: 3.5rem; height: 3.5rem; background-color: #444cb3; color: white; font-size: 1.5rem; border: solid 2px rgb(149, 148, 148); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">🖨️</button> --}}
 

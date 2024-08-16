@@ -41,4 +41,6 @@ class HotelScoresByNorm extends Model
     {
         return $this->belongsTo(Mission::class, 'mission', 'ID_Mission');
     }
+
+    
 }

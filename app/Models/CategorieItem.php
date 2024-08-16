@@ -16,9 +16,11 @@ class CategorieItem extends Model
         'ponderation',
     ];
 
-    public $timestamps = false; 
+    public $timestamps = false;
     public function items()
     {
         return $this->hasMany(Item::class, 'categories_item_id');
     }
+
+    
 }

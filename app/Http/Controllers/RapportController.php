@@ -30,10 +30,16 @@ class RapportController extends Controller
 
         $hotel_categorie = $hotel->categorie;
 
-        $normes = HotelScoresByNorm::with('norm', 'item')
+        // $normes = HotelScoresByNorm::with('norm', 'item')
+        //     ->where('hotel_id', $hotel_id)
+        //     ->where('mission', $ID_Mission)
+        //     ->get();
+
+        $normes = HotelScoresByNorm::with(['norm', 'item.category'])
             ->where('hotel_id', $hotel_id)
             ->where('mission', $ID_Mission)
             ->get();
+
 
         $mission = Mission::where('hotel_id', $hotel_id)->first();
         if (!$mission) {
