@@ -102,12 +102,15 @@ Route::get('/login', [LoginController::class, 'loginForm'])->name('login');
 
 Route::get('/rapport/{hotel_id}/{legende_id}', [RapportController::class, 'index'])->name('page_rapport');
 Route::post('/voirRapport', [RapportController::class, 'voirRapport'])->name('voir_rapport');
+
+
 // Route::get('/rapport/download-pdf/{hotel_id}/{legende_id}', [RapportController::class, 'downloadPdf'])->name('rapport.downloadPdf');
 
 
 // Route::get('rapport/{hotel_id}/{legende_id}/pdf', [RapportController::class, 'downloadPdf'])->name('generate_pdf');
 
 
+Route::get('/download-rapport/{hotel_id}/{legende_id}/{ID_Mission}', [RapportController::class, 'downloadRapport'])->name('download.rapport');
 
 
 Route::get('/generate-pdf/{hotel_id}/{legende_id}/{ID_Mission}', [RapportController::class, 'generatePdf'])->name('generate_pdf');

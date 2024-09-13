@@ -183,7 +183,7 @@
     <div class="card">
         <h2 style="text-align: center;">Conditions de visites et profil du client mystère</h2>
         <ul>
-            <li><strong>Auditeur :</strong> : {{ $missionActulle->user->Nom }} {{ $missionActulle->user->Prenom }}</li>
+            <li><strong>Auditeurssssssss :</strong> : {{ $missionActulle->user->Nom }} {{ $missionActulle->user->Prenom }}</li>
             <li><strong>Sexe :</strong> {{ $missionActulle->user->Sexe }}</li>
             <li><strong>Âge :</strong> {{ $missionActulle->user->Age }}</li>
             <li><strong>Profession :</strong> {{ $missionActulle->user->Profession }}</li>
@@ -473,8 +473,56 @@
 
 
 
-    {{-- <button id="printButton"
-        style="position: fixed; bottom: 1.5rem; right: 6rem; width: 3.5rem; height: 3.5rem; background-color: #444cb3; color: white; font-size: 1.5rem; border: solid 2px rgb(149, 148, 148); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">🖨️</button> --}}
+    {{-- <button id="printButton" style="position: fixed; bottom: 1.5rem; right: 6rem; width: 3.5rem; height: 3.5rem; background-color: #444cb3; color: white; font-size: 1.5rem; border: solid 2px rgb(149, 148, 148); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">🖨️</button> --}}
+
+    <button id="downloadButton" onclick="downloadPdf()" style="position: fixed; bottom: 1.5rem; right: 6rem; width: 3.5rem; height: 3.5rem; background-color: #444cb3; color: white; font-size: 1.5rem; border: solid 2px rgb(149, 148, 148); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">⬇️</button>
+    <div class="no-print">
+        <button onclick="window.print()">Imprimer le Rapport</button>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('gaugeChart').getContext('2d');
+        const globalScore = {{ number_format(intval($scoresGlobale->total_score_conforme_globale) / intval($scoresGlobale->total_score_globale), 2) * 100 }};
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [globalScore, 100 - globalScore],
+                    backgroundColor: [
+                        globalScore >= 70 ? 'green' : globalScore >= 50 ? 'orange' : 'red',
+                        'lightgray'
+                    ],
+                    circumference: 180,
+                    rotation: 270,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    tooltip: { enabled: false },
+                    legend: { display: false },
+                    datalabels: {
+                        formatter: (value, ctx) => {
+                            if (ctx.dataIndex === 0) return globalScore + '%';
+                            return null;
+                        },
+                        color: 'black',
+                        font: { size: 24, weight: 'bold' },
+                        anchor: 'end',
+                        align: 'start',
+                    }
+                },
+            },
+        });
+    </script>
+<!-- <script>
+function downloadPdf() {
+    window.location.href = "{{ route('generate_pdf', ['hotel_id' => $hotel_id, 'legende_id' => $legende_id, 'ID_Mission' => $ID_Mission]) }}";
+}
+</script> -->
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {

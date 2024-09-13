@@ -2,75 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rapport PDF</title>
     <style>
-        /* Include all your CSS styles here */
-
-        * {
-        font-size: 14px;
-    }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 50px 0;
-            font-size: 18px;
-            text-align: left;
-        }
-        caption, .caption {
-            background-color: #031c96;
-            margin: 0;
-            caption-side: top;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 0;
-            padding: 10px;
-            color: #fff;
-        }
-        thead td {
-            background-color: #031c96;
-            color: #fff;
-            text-align: center;
-        }
-        td {
-            padding: 5px;
-            height: 3rem !important;
-            border: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-            height: 3rem !important;
-        }
-        .card {
-            border: 1px solid #031c96;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-            background-color: #f9f9f9;
-        }
-        .card h2 {
-            background-color: #031c96;
-            color: #fff;
-            padding: 0.5rem;
-            margin: -1rem -1rem 1rem -1rem;
-            border-radius: 5px 5px 0 0;
-        }
-        h1 { font-size: 24px; }
-h2 { font-size: 20px; }
-        /* Include other styles as needed */
+        @page { margin: 0px; }
+        body { margin: 0px; font-family: Arial, sans-serif; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        caption, .caption { background-color: #031c96; color: #fff; font-size: 16px; font-weight: bold; padding: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .card { border: 1px solid #031c96; border-radius: 5px; padding: 10px; margin: 10px 0; background-color: #f9f9f9; }
+        .card h2 { background-color: #031c96; color: #fff; padding: 5px; margin: -10px -10px 10px -10px; border-radius: 5px 5px 0 0; font-size: 14px; text-align: center; }
+        .progress-bar { width: 100%; background-color: #f3f3f3; border-radius: 5px; overflow: hidden; }
+        .progress { height: 20px; border-radius: 5px; }
     </style>
 </head>
-<body style="padding: 1rem">
-    <div style="position: relative; width: 100%; height: 100px; margin-bottom: 60px;">
-        <div style="position: absolute; left: 0; top: 0;">
-            <img style="width: 150px;" src="{{ public_path('images/logo_rapport.png') }}" alt="Mag Management Groupe logo">
-        </div>
-        <div style="position: absolute; right: 0; top: 0;:">
-            <img style="height: 80px; border-radius: 8px;" src="{{ public_path('storage/' . $hotelLogo) }}" alt="Hotel Logo">
-        </div>
+<body style="padding: 20px;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <img style="width: 100px;" src="{{ public_path('images/logo_rapport.png') }}" alt="Mag management groupe logo">
+        <img style="height: 80px; border-radius: 8px;" src="{{ public_path('storage/' . $hotelLogo) }}" alt="Hotel Logo">
     </div>
 
     <div class="card">
-        <h2 style="text-align: center;">Conditions de visites et profil du client mystère</h2>
+        <h2>Conditions de visites et profil du client mystère</h2>
         <ul>
             <li><strong>Auditeur :</strong> {{ $missionActulle->user->Nom }} {{ $missionActulle->user->Prenom }}</li>
             <li><strong>Sexe :</strong> {{ $missionActulle->user->Sexe }}</li>
@@ -85,7 +39,7 @@ h2 { font-size: 20px; }
     </div>
 
     <div class="card">
-        <h2 style="text-align: center;">Critères d'évaluation</h2>
+        <h2>Critères d'évaluation</h2>
         <p>
             Chaque item est noté « oui » ou « non » ou « non applicable (NA) »<br>
             Si l'item n'a pu être mesuré ou observé, « NA » sera choisi et n'impactera donc pas votre résultat<br>
@@ -100,43 +54,34 @@ h2 { font-size: 20px; }
         </p>
     </div>
 
-    <div class="card" style="margin-bottom: 15rem">
-        <h2 style="text-align: center;">Résumé de la visite</h2>
+    <div class="card">
+        <h2>Résumé de la visite</h2>
         <p>{{ $resume }}</p>
     </div>
 
+    <div style="page-break-before: always;"></div>
+
+    <div class="caption">Moyenne générale de la visite {{ number_format(intval($scoresGlobale->total_score_conforme_globale) / intval($scoresGlobale->total_score_globale), 2) * 100 }}%</div>
+
     <div class="caption">Rappel visites précédentes</div>
-
-    <div style="font-family: Arial, sans-serif; width: 100%; margin-top: 15px">
-        {{-- <div style="background-color: blue; color: white; padding: 5px; font-weight: bold;">
-            Rappel visites précédentes
-        </div> --}}
-        <div style="display: flex; flex-direction: column; padding: 20px;">
-            @foreach ($visites as $index => $visite)
-                @php
-                    $score = intval($visite->score);
-                    $color = $score < 30 ? 'red' : 'white';
-                @endphp
-                <div style="display: flex; align-items: center; margin-bottom: 2rem;">
-                    <div style="width: 20px; height: 20px; background-color: {{ $color }}; border: 1px solid #ddd; margin-right: 10px;"></div>
-                    <div style="flex-grow: 1;">
-                        <span style="font-weight: bold;">{{ $score }}%</span>
-                        <span style="margin-left: 10px;">visite T{{ $index + 1 }}</span>
-                        <span style="color: gray; font-size: 0.9em; margin-left: 10px;">
-                            @if ($visite->created_at)
-                                {{ $visite->created_at->diffForHumans() }}
-                            @else
-                                N/A
-                            @endif
-                        </span>
-                    </div>
+    <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+        @foreach ($visites as $index => $visite)
+            @php
+                $score = intval($visite->score);
+                $color = $score < 50 ? 'red' : ($score < 70 ? 'orange' : 'green');
+            @endphp
+            <div style="text-align: center;">
+                <div style="width: 50px; height: 100px; background-color: #f2f2f2; margin: 0 auto; position: relative;">
+                    <div style="width: 100%; height: {{ $score }}%; background-color: {{ $color }}; position: absolute; bottom: 0;"></div>
                 </div>
-            @endforeach
-        </div>
+                <p>{{ $score }}%</p>
+                <p>visite T{{ $index + 1 }}</p>
+                <p>{{ $visite->created_at ? $visite->created_at->diffForHumans() : 'N/A' }}</p>
+            </div>
+        @endforeach
     </div>
-    
 
-    <table id="details-table">
+    <table>
         <caption>Détails des Normes</caption>
         <thead>
             <tr>
@@ -144,90 +89,106 @@ h2 { font-size: 20px; }
                 <th>Pondération</th>
                 <th>Note section</th>
                 <th>Note pondérée</th>
-                <th>Moyenne section pondérée</th>
+                <th>Progression</th>
                 <th>Note par section</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($scores as $score)
+            @foreach ($scores->groupBy('item.category.id') as $category_id => $category_scores)
+                @php
+                    $category = $category_scores->first()->item->category;
+                    $category_ponderation = $category->ponderation;
+                    $category_total_score_conforme = $category_scores->sum('total_score_conforme');
+                    $category_total_score = $category_scores->sum('total_score');
+                    $category_percentage = $category_total_score > 0 ? ($category_total_score_conforme / $category_total_score) * 100 : 0;
+                    $category_weighted_score = ($category_percentage * $category_ponderation) / 100;
+                @endphp
                 <tr>
-                    <td>{{ $score->item->libelle }}</td>
-                    <td>_</td>
-                    <td>{{ intval($score->total_score_conforme) }} / {{ intval($score->total_score) }}</td>
+                    <td><strong>{{ $category->libele }}</strong></td>
+                    <td>{{ $category_ponderation }}</td>
+                    <td></td>
+                    <td>{{ number_format($category_weighted_score, 2) }}</td>
                     <td>
-                        @if ($score->total_score != 0)
-                            {{ number_format(intval($score->total_score_conforme) / intval($score->total_score), 2) * 100 }}%
-                        @else
-                            0%
-                        @endif
-                    </td>
-                    <td>
-                        <div style="width: 70%; height: 5px; background-color: rgba(199, 196, 196, 0.694); border: 1px solid #747474; border-radius: 2px;">
-                            <div style="width: {{ $score->total_score != 0 ? (intval($score->total_score_conforme) / intval($score->total_score)) * 100 : 0 }}%; height: 100%; background-color: 
-                                {{ $score->total_score != 0 ? (intval($score->total_score_conforme) / intval($score->total_score)) * 100 >= 75 ? 'green' : ((intval($score->total_score_conforme) / intval($score->total_score)) * 100 >= 50 ? 'yellow' : ((intval($score->total_score_conforme) / intval($score->total_score)) * 100 >= 25 ? 'orange' : 'red')) : 'red' }};">
-                            </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: {{ $category_percentage }}%; background-color: {{ $category_percentage >= 70 ? 'green' : ($category_percentage >= 50 ? 'orange' : 'red') }};"></div>
                         </div>
+                        {{ number_format($category_percentage, 2) }}%
                     </td>
                     <td>
-                        @if ($score->total_score != 0)
-                            {{ number_format(intval($score->total_score_conforme) / intval($score->total_score), 2) * 100 }}%
-                        @else
-                            0%
-                        @endif
+                        @php
+                            $total_conforme = $category_scores->sum('total_conforme');
+                            $total_non_conforme = $category_scores->sum('total_non_conforme');
+                            $total = $total_conforme + $total_non_conforme;
+                        @endphp
+                        {{ $total > 0 ? number_format(($total_conforme / $total) * 100, 2) : 0 }}%
                     </td>
                 </tr>
+                @foreach ($category_scores as $score)
+                    <tr>
+                        <td>{{ $score->item->libelle }}</td>
+                        <td></td>
+                        <td>{{ intval($score->total_score_conforme) }} / {{ intval($score->total_score) }}</td>
+                        <td>{{ number_format(($score->total_score_conforme / $score->total_score) * $category_ponderation / 100, 2) }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                @endforeach
             @endforeach
             <tr style="background-color: #878787;">
                 <td>Score Globale</td>
                 <td>_</td>
                 <td>{{ intval($scoresGlobale->total_score_conforme_globale) }} / {{ intval($scoresGlobale->total_score_globale) }}</td>
-                <td>
-                    @if ($scoresGlobale->total_score_globale != 0)
-                        {{ number_format(intval($scoresGlobale->total_score_conforme_globale) / intval($scoresGlobale->total_score_globale), 2) * 100 }}%
-                    @else
-                        0%
-                    @endif
+                <td colspan="3">
+                    {{ number_format(($scoresGlobale->total_score_conforme_globale / $scoresGlobale->total_score_globale) * 100, 2) }}%
                 </td>
-                <td></td>
-                <td></td>
             </tr>
         </tbody>
     </table>
 
-    <table id="details-table">
-        <caption>Détails des Normes</caption>
-        <thead>
-            <tr>
-                <th>Norme ID</th>
-                <th>Réponse</th>
-                <th>Score</th>
-                <th>Commentaire</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($normes as $norme)
-                <tr>
-                    <td style="width: 50% !important">{{ $norme->norm->Normes }}</td>
-                    @if ($norme->verifie == 'conforme')
-                        <td>*Oui</td>
-                    @elseif($norme->verifie == 'non_conforme' || $norme->verifie == 'Non inspecté')
-                        <td>*Non</td>
-                    @else
-                        <td></td>
-                    @endif
-
-                    @if ($norme->verifie == 'conforme')
-                        <td>{{ $norme->score }}/{{ $norme->score }}</td>
-                    @elseif($norme->verifie == 'non_conforme' || $norme->verifie == 'Non inspecté')
-                        <td>0.00/{{ $norme->score }}</td>
-                    @else
-                        <td></td>
-                    @endif
-
-                    <td>{{ $norme->remarques }}</td>
+    @foreach ($normes->groupBy('item.category.libele') as $category => $groupedNormes)
+        <table>
+            <thead>
+                <tr style="background-color: #1e39c2; color: #ccc;">
+                    <th>{{ $category }}</th>
+                    <th>Réponse</th>
+                    <th>Score</th>
+                    <th>Commentaire</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach ($groupedNormes->groupBy('item.libelle') as $item => $itemNormes)
+                    <tr>
+                        <td colspan="4" style="font-weight: bold; background-color: #5480b1; color: #000000;">
+                            {{ $item }}
+                        </td>
+                    </tr>
+                    @foreach ($itemNormes as $norme)
+                        <tr>
+                            <td>{{ $norme->norm->Normes }}</td>
+                            <td>
+                                @if ($norme->verifie == 'conforme')
+                                    *Oui
+                                @elseif($norme->verifie == 'non_conforme')
+                                    *Non
+                                @else
+                                    *N/A
+                                @endif
+                            </td>
+                            <td>
+                                @if ($norme->verifie == 'conforme')
+                                    {{ $norme->score }}/{{ $norme->score }}
+                                @elseif($norme->verifie == 'non_conforme')
+                                    0.00/{{ $norme->score }}
+                                @else
+                                    &nbsp;
+                                @endif
+                            </td>
+                            <td style="color: #0653fa;">{{ $norme->remarques }}</td>
+                        </tr>
+                    @endforeach
+                @endforeach
+            </tbody>
+        </table>
+    @endforeach
 </body>
 </html>

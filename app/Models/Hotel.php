@@ -39,4 +39,9 @@ class Hotel extends Model
     {
         return $this->hasMany(HotelScoresByNorm::class);
     }
+
+    public function missions()
+    {
+        return $this->hasMany(Mission::class, 'hotel_id', 'id');
+    }
 }

@@ -12,7 +12,7 @@
     <!-- Hotel Information Section -->
     <div class="text-start bg-white mb-3 dark:bg-gray-700 p-6 rounded-lg shadow-lg">
         <h3 class="font-semibold text-2xl mb-3.5 dark:text-white font-serif">
-            <span class="dark:text-white">Bienvenue M. </span>
+            <span class="dark:text-white">Bienvenue lllllllM. </span>
             <span class="text-cyan-400">{{ Auth::user()->Prenom }} {{ Auth::user()->Nom }}</span>
         </h3>
         <h3 class="font-semibold text-2xl mb-3.5 dark:text-white font-serif">
