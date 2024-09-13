@@ -102,8 +102,6 @@ Route::get('/login', [LoginController::class, 'loginForm'])->name('login');
 
 Route::get('/rapport/{hotel_id}/{legende_id}', [RapportController::class, 'index'])->name('page_rapport');
 Route::post('/voirRapport', [RapportController::class, 'voirRapport'])->name('voir_rapport');
-
-
 // Route::get('/rapport/download-pdf/{hotel_id}/{legende_id}', [RapportController::class, 'downloadPdf'])->name('rapport.downloadPdf');
 
 
